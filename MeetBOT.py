@@ -13,11 +13,12 @@ colorama.init()
 
 ###################################################################
 #                        Meets                      Y   M  D  H  m  s
-MEETS = {"1 http://meet.google.com/gqs-skwg-fjw": "2020 10 20 12 35 00",
+MEETS = {"1 http://meet.google.com/gqs-skwg-fjw": "2020 10 20 15 23 00",
+        "2 http://meet.google.com/gqs-skwg-fjw": "2020 10 20 15 25 00",
          # "2 https://meet.google.com/meetURL2": "2020 12 31 23 59 59",
          # Add more Meet URLs (if any) using the same format as above
          }
-DURATION = 60 # Duration of each Meet in minutes
+DURATION = 1 # Duration of each Meet in minutes
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 BROWSER_DRIVER = os.getenv("BROWSER_DRIVER")
@@ -36,7 +37,8 @@ passwordFieldPath = "password"
 passwordNextButtonPath = "passwordNext"
 joinButtonPath = "//span[contains(text(), 'Join')]"
 endButtonPath = "[aria-label='Leave call']"               
-                                                                                   
+
+width = os.get_terminal_size().columns                                                                       
 BANNER1 = colored('''
                      ██████   ██████                    █████    ███████████     ███████    ███████████
                     ░░██████ ██████                    ░░███    ░░███░░░░░███  ███░░░░░███ ░█░░░███░░░█
@@ -46,13 +48,13 @@ BANNER1 = colored('''
                      ░███      ░███ ░███░░░  ░███░░░    ░███ ███ ░███    ░███░░███     ███     ░███    
                      █████     █████░░██████ ░░██████   ░░█████  ███████████  ░░░███████░      █████   
                     ░░░░░     ░░░░░  ░░░░░░   ░░░░░░     ░░░░░  ░░░░░░░░░░░     ░░░░░░░       ░░░░░    
-                                                                                   ''', 'yellow')
-BANNER2 = colored('''                                         MeetBOT: The Google Meet Bot''', 'green', attrs=['blink'])
-BANNER3 = colored('''                                        ---------------------------------''', 'green', attrs=['blink'])
+                                                                                                        ''', 'yellow')
+BANNER2 = colored('''MeetBOT: The Google Meet Bot''', 'white', attrs=['blink'])
+BANNER3 = colored('''---------------------------------''', 'white', attrs=['blink'])
 
 
 def printBanner():
-    print(BANNER1), print(BANNER2), print(BANNER3)
+    print(BANNER1.center(width)), print(BANNER2.center(width)), print(BANNER3.center(width))
 
 
 def timeStamp():
@@ -94,13 +96,13 @@ def login():
     passwordNextButton = wait.until(when.element_to_be_clickable((by.ID, passwordNextButtonPath)))
     passwordNextButton.click()
     time.sleep(3)
-    print(colored(" Success!", "green"))
+    print(colored("   Success!", "green"))
 
 
 def attendMeet():
     print(f"\n\nNavigating to Google Meet #{meetIndex}...", end="")
     driver.get(URL[2:])
-    print(colored(" Success!", "green"))
+    print(colored("   Success!", "green"))
     print(f"Entering Google Meet #{meetIndex}...", end="")
 
     joinButton = wait.until(when.element_to_be_clickable((by.XPATH, joinButtonPath)))
@@ -109,9 +111,9 @@ def attendMeet():
     time.sleep(1)
     joinButton.click()
 
-    print(colored(" Success!", "green"))
-    time.sleep(1)
+    print(colored("   Success!", "green"))
     print(colored(f"Now attending Google Meet #{meetIndex} @{timeStamp()}", "green"), end="")
+    print()
 
     try:
         joinButton = wait.until(when.element_to_be_clickable((by.XPATH, joinButtonPath)))   # For another prompt that pops up for Meets being recorded
@@ -129,19 +131,18 @@ def endMeet():
 
 def genericError():
     # clrscr()
-    print(colored(" Failed!", "red"), end="")
+    print(colored("   Failed!", "red"), end="")
     print("\n\nPossible fixes:\n")
-    print("1 Make sure you have downloaded the latest version of MeetNinja from the GitHub page (every new iteration brings fixes and new capabilities)")
-    print("2.1 Check your inputs and run MeetNinja again (make sure there are no leading zeros in the Meet start times)")
-    print("2.2 And / Or make sure you have chosen the correct webdriver file respective of your web browser and operating system")
-    print("3. Make sure the generated web browser is not \"Minimized\" while MeetNinja is working")
-    print("4.1. Make sure the webdriver file is of the latest stable build (https://chromedriver.chromium.org/ or https://github.com/mozilla/geckodriver/releases)")
-    print("4.2. And / Or make sure your chosen web browser is updated to the latest version")
-    print("4.3. And / Or make sure the webdriver file is at least of the same version as your chosen web browser (or lower)")
-    print("5. Make sure the small \"time.sleep()\" delays (in seconds) in the functions are comfortable for your internet speed")
-    print("6. Make sure your internet connection is stable throughout the process")
-    print("\nPress Enter to exit.")
-    input()
+    print("1. Make sure you have downloaded the latest version of MeetBOT from GitHub")
+    print("2. Check your inputs and run MeetBOT again (make sure there are no leading zeros in the Meet start times)")
+    print("3. And / Or make sure you have chosen the correct webdriver file respective of your web browser and operating system")
+    print("4. Make sure the generated web browser is not \"Minimized\" while MeetBOT is working")
+    print("5. Make sure the webdriver file is of the latest stable build")
+    print("6. And / Or make sure your chosen web browser is updated to the latest version")
+    print("7. Make sure the webdriver file is at least of the same version as your chosen web browser")
+    print("8. Make sure the small \"time.sleep()\" delays (in seconds) in the functions are working fine as per your internet speed")
+    print("9. Make sure your internet connection is stable throughout the process")
+    input(colored("\nPress Enter to exit- ", "red"))
     try:
         driver.quit()
     except:
@@ -176,30 +177,27 @@ if __name__ == "__main__":
         for meetIndex, (URL, startTime) in enumerate(MEETS.items(), start=1):
             startTime = list(map(int, startTime.split()))
             if (meetIndex <= 1):
-                print(colored(f"Waiting until first Meet start time [{startTime[-3]:02}:{startTime[-2]:02}:{startTime[-1]:02}]...", "yellow"), end="")
+                print(colored(f"\nWaiting until first Meet start time [{startTime[-3]:02}:{startTime[-2]:02}:{startTime[-1]:02}]...", "yellow"), end="")
             else:
                 print(colored(f"\n\nWaiting until next Meet start time [{startTime[-3]:02}:{startTime[-2]:02}:{startTime[-1]:02}]...", "yellow"), end="")
             pause.until(datetime(*startTime))
-            print(colored(" Started!", "green"))
+            print(colored("   Started!", "green"))
             if (meetIndex <= 1):
                 login()
             attendMeet()
             time.sleep(DURATION)
             endMeet()
-        print("\n\nAll Meets completed successfully.")
+        print("\n\nAll Meets completed successfully!")
         # hibernate()
         # Uncomment above to hibernate after a 10 second countdown upon completion of all Meets (Ctrl + C to abort hibernation)
-        print("Press Enter to exit.")
-        input()
+        input(colored("\nPress Enter to exit- ", "red"))
         print("\nCleaning up and exiting...", end="")
         driver.quit()
 
     except KeyboardInterrupt:
         # clrscr()
-        print("\n\nCTRL ^C\n\nAs you wish master\n")
-        print("Press Enter to exit.")
-        input()
-        print("\nCleaning up and exiting...", end="")
+        input(colored("\nPress Enter to exit- ", "red"))
+        print(colored("\nCleaning up and exiting...\n\n", "red"), end="")
         driver.quit()
     except:
         # print(e)
