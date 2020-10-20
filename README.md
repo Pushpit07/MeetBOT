@@ -22,7 +22,9 @@ This project is created in Python.
 4. Make a .env file in the MeetBOT directory. Set your Google email, password, path to the web driver file as specified below-
 
 `EMAIL=Your email`
+
 `PASSWORD=Your password`
+
 `BROWSER_DRIVER=Path to the chromedriver`
 
 5. Save your changes, and run the program.
