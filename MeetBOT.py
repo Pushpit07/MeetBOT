@@ -8,18 +8,25 @@ import pause; import os; import re
 import time; from datetime import datetime
 import colorama; from termcolor import colored
 from dotenv import load_dotenv
+import beepy
 
 load_dotenv()
 colorama.init()
 
 ###################################################################
+###### Edit the values for MEETS, DURATION, and trigger_words #####
+
 #                        Meets                      Y   M  D  H  m  s
-MEETS = {"1 http://meet.google.com/gqs-skwg-fjw": "2020 10 21 08 23 00",
+MEETS = {"1 http://meet.google.com/mnm-drnn-jke": "2020 10 21 08 23 00",
         "2 http://meet.google.com/gqs-skwg-fjw": "2020 10 21 15 25 00",
-         # "2 https://meet.google.com/meetURL2": "2020 12 31 23 59 59",
+         # "3 https://meet.google.com/meetURL3": "2020 12 31 23 59 59",
          # Add more Meet URLs (if any) using the same format as above
          }
 DURATION = 5 # Duration of each Meet in minutes
+trigger_words = ['attendance', 'present']
+
+###################################################################
+
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 BROWSER_DRIVER = os.getenv("BROWSER_DRIVER")
@@ -135,8 +142,18 @@ def attendMeet():
         pass
 
 def readTranscript():
-    tactiqButton = wait.until(when.element_to_be_clickable((by.XPATH, '//div[@class="_2qlModb"]'))).click()
+    tactiqButton = wait.until(when.element_to_be_clickable((by.XPATH, '//div[@class="_2qlModb"]')))
     tactiqButton.click()
+
+    while True:
+        time.sleep(0.3)
+        all_texts = driver.find_elements_by_xpath('//div[@class="K4JPC9P"]')
+        for text in all_texts[-3:]:
+            check = any(item in text.text.lower() for item in trigger_words)
+            if check is True:
+                beepy.beep(sound = 5)
+            else:
+                continue
 
 def endMeet():
     endButton = driver.find_element_by_css_selector(endButtonPath)
@@ -146,17 +163,18 @@ def endMeet():
 
 def genericError():
     # clrscr()
-    print(colored("   Failed!", "red"), end="")
+    print(colored("Error : Failed!", "red"), end="")
     print("\n\nPossible fixes:\n")
-    print("1. Make sure you have downloaded the latest version of MeetBOT from GitHub")
-    print("2. Check your inputs and run MeetBOT again (make sure there are no leading zeros in the Meet start times)")
-    print("3. And / Or make sure you have chosen the correct webdriver file respective of your web browser and operating system")
-    print("4. Make sure the generated web browser is not \"Minimized\" while MeetBOT is working")
-    print("5. Make sure the webdriver file is of the latest stable build")
-    print("6. And / Or make sure your chosen web browser is updated to the latest version")
-    print("7. Make sure the webdriver file is at least of the same version as your chosen web browser")
-    print("8. Make sure the small \"time.sleep()\" delays (in seconds) in the functions are working fine as per your internet speed")
-    print("9. Make sure your internet connection is stable throughout the process")
+    print("1. Check that the meeting link is valid")
+    print("2. Check your inputs and run MeetBOT again")
+    print("3. Make sure your internet connection is stable throughout the process")
+    print("4. Make sure the small \"time.sleep()\" delays (in seconds) in the functions are working fine as per your internet speed")
+    print("5. Make sure you have downloaded the latest version of MeetBOT from GitHub") 
+    print("6. And / Or make sure you have chosen the correct webdriver file respective of your web browser and operating system")
+    print("7. Make sure the generated web browser is not \"Minimized\" while MeetBOT is working")
+    print("8. Make sure the webdriver file is of the latest stable build")
+    print("9. And / Or make sure your chosen web browser is updated to the latest version")
+    print("10. Make sure the webdriver file is at least of the same version as your chosen web browser")  
     input(colored("\nPress Enter to exit- ", "red"))
     try:
         driver.quit()
