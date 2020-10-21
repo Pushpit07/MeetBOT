@@ -6,7 +6,7 @@ A tool that attends your Google Meet(s) for you on autopilot while you sleep or 
 This project is created in Python.
 
 ## Features
-- Notifies you by making a beep sound whenever any of the trigger word is spoken by anyone during the meeting
+- Notifies you by making a continuous beep sound whenever any of the trigger word is spoken by anyone during the meeting
 - Mulitple Meet sessions supported, according to the user-defined Meet schedule
 - Works even with the display on sleep (and does not wake it up either)
 - Works even in the background while you do other work (as long as you do not *explicitly* "Minimize" the browser window MeetBOT generates; just keep it open in the background, beneath your current open window(s))
