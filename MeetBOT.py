@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as when
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By as by
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -13,12 +14,12 @@ colorama.init()
 
 ###################################################################
 #                        Meets                      Y   M  D  H  m  s
-MEETS = {"1 http://meet.google.com/gqs-skwg-fjw": "2020 10 20 15 23 00",
-        "2 http://meet.google.com/gqs-skwg-fjw": "2020 10 20 15 25 00",
+MEETS = {"1 http://meet.google.com/gqs-skwg-fjw": "2020 10 21 08 23 00",
+        "2 http://meet.google.com/gqs-skwg-fjw": "2020 10 21 15 25 00",
          # "2 https://meet.google.com/meetURL2": "2020 12 31 23 59 59",
          # Add more Meet URLs (if any) using the same format as above
          }
-DURATION = 1 # Duration of each Meet in minutes
+DURATION = 5 # Duration of each Meet in minutes
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 BROWSER_DRIVER = os.getenv("BROWSER_DRIVER")
@@ -56,6 +57,8 @@ BANNER3 = colored('''---------------------------------''', 'white', attrs=['blin
 def printBanner():
     print(BANNER1.center(width)), print(BANNER2.center(width)), print(BANNER3.center(width))
 
+def switch_tab(no):
+    driver.switch_to.window(driver.window_handles[no])
 
 def timeStamp():
     timeNow = str(datetime.now())
@@ -67,8 +70,8 @@ def initBrowser():
     chromeOptions = webdriver.ChromeOptions()
     chromeOptions.add_argument("--disable-infobars")
     chromeOptions.add_argument("--disable-gpu")
-    chromeOptions.add_argument("--disable-extensions")
     chromeOptions.add_argument("--window-size=800,800")
+    chromeOptions.add_extension('./tactiq.crx')
     chromeOptions.add_experimental_option('excludeSwitches', ['enable-logging'])
     chromeOptions.add_experimental_option("prefs", {"profile.default_content_setting_values.media_stream_mic": 2,
                                                     "profile.default_content_setting_values.media_stream_camera": 2,
@@ -98,6 +101,12 @@ def login():
     time.sleep(3)
     print(colored("   Success!", "green"))
 
+def closeTactiq():
+    time.sleep(3)
+    switch_tab(1)
+    driver.close()
+    switch_tab(0)
+    #action.keyDown(Keys.COMMAND).sendKeys(String.valueOf('\u0077')).perform();
 
 def attendMeet():
     print(f"\n\nNavigating to Google Meet #{meetIndex}...", end="")
@@ -115,6 +124,9 @@ def attendMeet():
     print(colored(f"Now attending Google Meet #{meetIndex} @{timeStamp()}", "green"), end="")
     print()
 
+    time.sleep(3)
+    readTranscript()
+
     try:
         joinButton = wait.until(when.element_to_be_clickable((by.XPATH, joinButtonPath)))   # For another prompt that pops up for Meets being recorded
         time.sleep(1)
@@ -122,6 +134,9 @@ def attendMeet():
     except:
         pass
 
+def readTranscript():
+    tactiqButton = wait.until(when.element_to_be_clickable((by.XPATH, '//div[@class="_2qlModb"]'))).click()
+    tactiqButton.click()
 
 def endMeet():
     endButton = driver.find_element_by_css_selector(endButtonPath)
@@ -183,6 +198,7 @@ if __name__ == "__main__":
             pause.until(datetime(*startTime))
             print(colored("   Started!", "green"))
             if (meetIndex <= 1):
+                closeTactiq()
                 login()
             attendMeet()
             time.sleep(DURATION)

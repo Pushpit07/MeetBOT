@@ -27,7 +27,9 @@ This project is created in Python.
 
 `BROWSER_DRIVER=Path to the chromedriver`
 
-5. Save your changes, and run the program.
+5. Install Tactiq extension on Chrome
+
+6. Save your changes, and run the program.
 
 ### What MeetBOT Does
 Upon execution, MeetNinja generates a new Google Chrome / Mozilla Firefox window in Developer Mode, and this new window stays idle until it is time to join your first Meet (according to your schedule). Once it is time, MeetNinja automatically logs you into your Google account, navigates to the first Meet URL, disables your camera & microphone, joins the Meet session, and then waits until the duration specified (60 minutes by default) before ending the call and repeating the same for the *next* Meet session (whenever it may be) and so on, until your schedule has exhausted *(phew)*
